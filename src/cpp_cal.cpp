@@ -1,23 +1,18 @@
 #include <iostream>
 #include <cstring>
 #include <string>
+#include "stack.h"
+#include "rpn.h"
 using namespace std;
 
 class Calculator {
     public:
         Calculator(const char input[]);
         void print_for_test();
+        void print_for_test_n();
     private:
         char str[256];
         char notated_str[256];
-};
-
-class RPN {
-    public:
-        RPN(const char input[]);
-        void notate(char output[]);
-    private:
-        char str[256];
 };
 
 class Operator {
@@ -47,13 +42,8 @@ void Calculator::print_for_test() {
     cout << str << flush;
 }
 
-RPN::RPN(const char input[]) {
-    strcpy(str, input);
-}
-void RPN::notate(char output[]){
-    char buffer[256];
-    // str -> RPN -> buffer
-    strcpy(output, buffer);
+void Calculator::print_for_test_n() {
+    cout << notated_str << endl;
 }
 
 Operator::Operator(const char input[]) {
@@ -68,7 +58,7 @@ void Operator::calculate() {
 
 int main() {
     cout << "Hello! Let's calculate!!" << endl;
-    cout << "Input expression like 1+(2*3)/4*5" << endl;
+    cout << "Input expression like 1+(2*3)/4-5" << endl;
     string input;
     getline(cin, input);
     Calculator cal(input.c_str());

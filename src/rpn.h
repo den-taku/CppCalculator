@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstring>
 #include <string>
+#include "stack.h"
 using namespace std;
 
 class RPN {
@@ -102,6 +103,8 @@ void RPN::notate(char output[]){
                 buffer[j] = str[i];
                 ++j;
             } else if (str[i] == '\0' || str[i] == '\n' || str[i] == ' ') {
+                buffer[j] = '|';
+                ++j;
                 while(!stack.empty()) {
                     buffer[j] = stack.top();
                     ++j;

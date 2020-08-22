@@ -22,30 +22,72 @@ void RPN::notate(char output[]){
     char buffer[256];
     // str -> RPN -> buffer
     Stack<char> stack(256);
+    int j = 0;
     try {
-        for(int i = 0, j = 0; i < 256; i++) {
+        for(int i = 0, after_ = 0; i < 256; i++) {
             // process operators
             if(str[i] == '+') {
+                if(!after_){
+                    buffer[j] = '|';
+                    ++j;
+                }
+                if(stack.top() == '*' || stack.top() == '/') {
+                    while(stack.top() == '*' || stack.top() == '/') {
+                        buffer[j] = stack.top();
+                        ++j;
+                        stack.pop();
+                    }
+                }
                 stack.push('+');
+                after_ = 0;
             } else if(str[i] == '-') {
+                if(!after_){
+                    buffer[j] = '|';
+                    ++j;
+                }
+                if(stack.top() == '*' || stack.top() == '/') {
+                    while(stack.top() == '*' || stack.top() == '/') {
+                        buffer[j] = stack.top();
+                        ++j;
+                        stack.pop();
+                    }
+                }
                 stack.push('-');
+                after_ = 0;
             } else if(str[i] == '*') {
-                if(stack.top() == '+' || stack.top() == '-') {
-                    buffer[j] = '*';
-                    ++j;
-                } else {
+                if(after_) {
                     stack.push('*');
-                }
-            } else if(str[i] == '/') {
-                if(stack.top() == '+' || stack.top() == '-') {
-                    buffer[j] = '/';
-                    ++j;
                 } else {
-                    stack.push('/');
+                    buffer[j] = '|';
+                    ++j;
+                    if(stack.top() == '+' || stack.top() == '-') {
+                        buffer[j] = '*';
+                        ++j;
+                    } else {
+                        stack.push('*');
+                    }
                 }
+                after_ = 0;
+            } else if(str[i] == '/') {
+                if(after_) {
+                    stack.push('/');
+                } else {
+                    buffer[j] = '|';
+                    ++j;
+                    if(stack.top() == '+' || stack.top() == '-') {
+                        buffer[j] = '/';
+                        ++j;
+                    } else {
+                        stack.push('/');
+                    }
+                }
+                after_ = 0;
             } else if(str[i] == '(') {
                 stack.push('(');
+                after_ = 0;
             } else if(str[i] == ')') {
+                buffer[j] = '|';
+                ++j;
                 while(stack.top() != '(') {
                     char tmp = stack.top();
                     buffer[j] = tmp;
@@ -53,6 +95,7 @@ void RPN::notate(char output[]){
                     stack.pop();
                 }
                 stack.pop();
+                after_ = true;
             } 
             // process number
               else if(str[i] >= '0' && str[i] <= '9') {
@@ -77,6 +120,7 @@ void RPN::notate(char output[]){
     } catch (const underflow_error& e) {
         cerr << e.what() << endl;
     }
+    buffer[j] = '\0';
     strcpy(output, buffer);
 }
 
